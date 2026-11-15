@@ -36,11 +36,11 @@ export const MainEventVenuePage: React.FC<MainEventVenuePageProps> = ({ onShareW
           </div>
 
           {/* Family Members Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-800">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
             {darshanabhilashi.familyMembers.map((fam, idx) => (
               <div key={idx} className="p-1.5 rounded-lg bg-amber-50/60 border border-gold/20 flex flex-col justify-center">
-                <span className="font-semibold text-maroon-950">{fam.name}</span>
-                {fam.spouse && <span className="text-gray-600 text-[11px]">{fam.spouse}</span>}
+                <span className="font-bold text-maroon-950">{fam.name}</span>
+                {fam.spouse && <span className="font-bold text-maroon-900 text-xs mt-0.5">{fam.spouse}</span>}
               </div>
             ))}
           </div>
