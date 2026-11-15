@@ -1,5 +1,5 @@
 import React from 'react';
-import { darshanabhilashi, tahuko, pressCredit } from '../../data/weddingData';
+import { darshanabhilashi, tahuko } from '../../data/weddingData';
 
 interface MainEventVenuePageProps {
   onShareWhatsApp: () => void;
@@ -77,11 +77,6 @@ export const MainEventVenuePage: React.FC<MainEventVenuePageProps> = ({ onShareW
             <i className="fab fa-whatsapp text-lg"></i>
             <span>વોટ્સએપ પર આમંત્રણ શેર કરો (Share Invitation)</span>
           </button>
-        </div>
-
-        {/* Printing Press Credit */}
-        <div className="text-center text-[10px] text-gray-500 border-t border-gold/20 pt-2 mt-2">
-          <p>{pressCredit}</p>
         </div>
       </div>
     </div>

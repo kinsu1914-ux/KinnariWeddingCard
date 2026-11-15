@@ -190,5 +190,3 @@ export const tahuko = {
   note: 'નોંધ :- ભેટ, સાડીની બદલામાં રોકડ સ્વીકાર્ય છે.'
 };
 
-// Printing Press Credit from Card
-export const pressCredit = 'માતંગી પ્રિન્ટીંગ પ્રેસ - કૃષ્ણનગર રોડ, સૈજપુર, અમદાવાદ.';
