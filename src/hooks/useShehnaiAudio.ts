@@ -7,7 +7,7 @@ export function useShehnaiAudio() {
   const wasPlayingBeforeHiddenRef = useRef<boolean>(false);
 
   useEffect(() => {
-    // Song: "Vela Milan Ni - Jigardan Gadhavi & Yati Upadhyay (Gujarati Wedding Song 2024)"
+    // Song: "Dhin Dhin - Aarohi & Tatsat (Official Wedding Song - Aalap & Parth / Jigrra)"
     const audio = new Audio(weddingSongUrl);
     audio.loop = true;
     audio.preload = 'none';
