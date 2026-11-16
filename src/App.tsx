@@ -26,39 +26,69 @@ export const App: React.FC = () => {
 
   const { isPlaying, toggleAudio } = useShehnaiAudio();
 
-  // Mobile Touch Swipe Handling (Ignore multi-touch gestures like pinch-to-zoom)
+  // Mobile Touch Swipe Handling (Ignore multi-touch gestures like pinch-to-zoom and pan when zoomed)
   const touchStartXRef = useRef<number>(0);
   const touchStartYRef = useRef<number>(0);
   const isPinchGestureRef = useRef<boolean>(false);
+  const hasMultipleTouchesRef = useRef<boolean>(false);
+
+  const isViewportZoomed = () => {
+    // 1. Check Visual Viewport API (standard on Chrome, Safari iOS, etc.)
+    if (window.visualViewport && window.visualViewport.scale > 1.02) {
+      return true;
+    }
+    // 2. Fallback check for viewport width difference
+    if (window.visualViewport && window.innerWidth > 0) {
+      if (window.visualViewport.width < window.innerWidth - 5) {
+        return true;
+      }
+    }
+    // 3. Fallback check on document element scroll width vs client width
+    if (document.documentElement.scrollWidth > document.documentElement.clientWidth + 10) {
+      return true;
+    }
+    return false;
+  };
 
   const handleTouchStart = (e: React.TouchEvent) => {
     // If user touches with 2 or more fingers (pinch to zoom), mark it to ignore page swipe
     if (e.touches.length > 1) {
       isPinchGestureRef.current = true;
+      hasMultipleTouchesRef.current = true;
       return;
     }
     isPinchGestureRef.current = false;
-    touchStartXRef.current = e.changedTouches[0].screenX;
-    touchStartYRef.current = e.changedTouches[0].screenY;
+    hasMultipleTouchesRef.current = false;
+    touchStartXRef.current = e.changedTouches[0].clientX;
+    touchStartYRef.current = e.changedTouches[0].clientY;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    // If at any point during movement multiple fingers were used, treat as zoom/pinch
+    if (e.touches.length > 1) {
+      hasMultipleTouchesRef.current = true;
+      isPinchGestureRef.current = true;
+    }
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    // If this was part of a pinch-to-zoom gesture or multi-touch, do NOT trigger page navigation
-    if (isPinchGestureRef.current || e.touches.length > 0) {
+    // 1. If this was part of a pinch-to-zoom gesture or multi-touch, do NOT trigger page navigation
+    if (isPinchGestureRef.current || hasMultipleTouchesRef.current || e.touches.length > 0) {
       isPinchGestureRef.current = false;
+      hasMultipleTouchesRef.current = false;
       return;
     }
 
-    const touchEndX = e.changedTouches[0].screenX;
-    const touchEndY = e.changedTouches[0].screenY;
+    // 2. If the browser/viewport is zoomed in (scale > 1.02 or horizontal scroll exists),
+    // disable swipe navigation completely so user can pan/scroll freely left/right
+    if (isViewportZoomed()) {
+      return;
+    }
+
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
     const diffX = touchEndX - touchStartXRef.current;
     const diffY = touchEndY - touchStartYRef.current;
-
-    // If the browser/viewport is zoomed in (scale > 1.05), disable swipe navigation so user can pan/scroll freely
-    const isZoomed = window.visualViewport ? window.visualViewport.scale > 1.05 : false;
-    if (isZoomed) {
-      return;
-    }
 
     // Require an intentional horizontal swipe (at least 75px) that is clearly more horizontal than vertical
     if (Math.abs(diffX) > 75 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
@@ -173,6 +203,7 @@ export const App: React.FC = () => {
             {/* Main Container Card Frame with Touch Swipe */}
             <div
               onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
               className="w-full flex justify-center"
             >
